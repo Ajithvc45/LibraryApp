@@ -4,12 +4,18 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const bodyparser = require('body-parser');
 const { Router } = require('express');
+const path = require('path');
 
 const app = new express();
 app.use(cors());
 app.use(bodyparser.json());
+app.use(express.static('./dist/front-end'));
 username="admin"
 password="1234"
+
+app.get('/*', (req, res) => {
+    res.sendFile(path.join(__dirname + './dist/front-end/index.html'));
+})
 
 function verifyToken(req,res,next){
     if(!req.headers.authorization){
@@ -28,7 +34,7 @@ function verifyToken(req,res,next){
     next()
 }
 
-app.post('/login', (req, res) => {
+app.post('/api/login', (req, res) => {
     let userData = req.body
 
     if(!username) {
@@ -44,7 +50,7 @@ app.post('/login', (req, res) => {
     }
 })
 
-app.get('/library', (req, res)=>{
+app.get('/api/library', (req, res)=>{
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
     library.find()
@@ -53,23 +59,23 @@ app.get('/library', (req, res)=>{
         })
 })
 
-app.post('/insert',verifyToken, (req, res) => {
+app.post('/api/insert',verifyToken, (req, res) => {
     console.log('insert') 
     console.log(req.body);
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
 
-    var books = {
+    var book = {
         bookName: req.body.item.bookName,
         literature: req.body.item.literature,
         story: req.body.item.story
     }
 
-    var book = new library(books);
+    var book = new library(book);
     book.save();
 })
 
-app.delete('/library/remove/:id', (req, res, next) => {
+app.delete('/api/library/remove/:id', (req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
     id = req.params.id;
@@ -83,7 +89,7 @@ app.delete('/library/remove/:id', (req, res, next) => {
 
 
 
-app.get('/library/:id', (req, res) => {
+app.get('/api/library/:id', (req, res) => {
     const id = req.params.id;
     library.findOne({"_id":id})
     .then((book)=>{
@@ -91,7 +97,7 @@ app.get('/library/:id', (req, res) => {
     });
 });
 
-app.put('/update',(req, res) => {
+app.put('/api/update',(req, res) => {
     console.log(req.body)
     id=req.body._id,
     bookName=req.body.bookName,
