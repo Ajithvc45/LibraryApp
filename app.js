@@ -7,6 +7,7 @@ const { Router } = require('express');
 const path = require('path');
 
 const app = new express();
+const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(bodyparser.json());
 app.use(express.static('./dist/front-end'));
@@ -112,4 +113,6 @@ app.put('/api/update',(req, res) => {
     })
 })
 
-app.listen(3000);
+app.listen(PORT, () => {
+    console.log('server up in port '+PORT)
+});
