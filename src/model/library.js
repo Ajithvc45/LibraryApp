@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb://localhost:27017/library');
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true }).then(()=>{
+    console.log("Database connection successfull")
+}).catch((err)=>{
+    console.log(err)
+});
 
 mongoose.connection.on('connected', ()=>{
     console.log('connected to database mongodb @ 27017');
